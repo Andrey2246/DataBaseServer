@@ -1,15 +1,13 @@
 package main
 
-// go run main.go arr.go bst.go hash.go q.go set.go stac.go dbInputHandler.go
-// go run *.go
-
 import (
 	"bufio"
 	"fmt"
 	"log"
 	"net"
 	"sync"
-	containers "github.com/Andrey2246/containers"
+	containers "github.com/Andrey2246/containers"  // это мой же модуль. 
+												   // файл, который вы сейчас читаете доступен по ссылке github.com/Andrey2246/DataBaseServer
 )
 
 type DataBase struct {
@@ -51,13 +49,13 @@ func input(scanner *bufio.Reader, arr *containers.Arr) { // разбивает �
 func (db *DataBase) handleConnection(conn net.Conn) {
 	scanner := bufio.NewReader(conn)
 	ans := ""
-	conn.Write([]byte("Enter your password: "))
-	password, _ := bufio.NewReader(conn).ReadString('\n')
+	conn.Write([]byte("Enter your login: "))                    //один логин - одни контейнеры
+	password, _ := bufio.NewReader(conn).ReadString('\n')		//если логина раньше не было, он создается
 	commands := new(containers.Arr)
 	input(scanner, commands)
 	for i := 0; ans != "exit" && conn != nil && i < 10000; i++ {
 		db.mutex.Lock()
-		ans = db.execute(commands, password)
+		ans = db.execute(commands, password)                    // критическая область
 		db.mutex.Unlock()
 		conn.Write([]byte(ans + "\n"))
 		input(scanner, commands)
@@ -66,7 +64,7 @@ func (db *DataBase) handleConnection(conn net.Conn) {
 }
 
 func main() {
-	sock, err := net.Listen("tcp", ":6379")
+	sock, err := net.Listen("tcp", ":6379") 				    //  соединение tcp, порт - 6379
 	if err != nil {
 		log.Fatalln("conn messed up \n", err.Error())
 		panic(err)
