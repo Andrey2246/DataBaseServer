@@ -9,12 +9,18 @@ func (db *DataBase) execute(commands *containers.Arr, password string) string {
 	command := commands.Get(0)
 	key := commands.Get(1)
 	val := commands.Get(2)
+	if command != "exit" && key == ""{
+		return "no key"
+	}
 	if command == "" {
-		return "help"
+		return "no command"
 	}
 	switch command[0] {
 	case 'H':
 		{
+			if val == ""{
+				return "no value"
+			}
 			if db.h[password] == nil {
 				db.h[password] = new(containers.HashMap)
 			}

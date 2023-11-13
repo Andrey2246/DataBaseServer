@@ -68,7 +68,7 @@ func (db *DataBase) handleConnection(conn net.Conn) {
 func main() {
 	sock, err := net.Listen("tcp", ":6379")
 	if err != nil {
-		log.Fatalln("conn messed up", err.Error())
+		log.Fatalln("conn messed up \n", err.Error())
 		panic(err)
 	}
 	defer sock.Close()
