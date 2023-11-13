@@ -36,7 +36,7 @@ func input(scanner *bufio.Reader, arr *containers.Arr) { // разбивает �
 	arr.Set(2, s3)
 }
 
-func (db *DataBase) handleConnection(conn net.Conn) {
+func (db *containers.DataBase) handleConnection(conn net.Conn) {
 	scanner := bufio.NewReader(conn)
 	ans := ""
 	conn.Write([]byte("Enter your login: "))                    //один логин - одни контейнеры
@@ -60,7 +60,7 @@ func main() {
 		panic(err)
 	}
 	defer sock.Close()
-	db := new(DataBase)
+	db := new(containers.DataBase)
 	db.a = make(map[string]*containers.Arr)
 	db.b = make(map[string]*containers.Bst)
 	db.h = make(map[string]*containers.HashMap)
