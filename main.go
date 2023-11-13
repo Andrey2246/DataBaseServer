@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"sync"
 	containers "github.com/Andrey2246/containers"  // это мой же модуль. 
 												   // файл, который вы сейчас читаете доступен по ссылке github.com/Andrey2246/DataBaseServer
 )
-
+type serverDataBase struct{
+	 containers.DataBase
+	}
 func input(scanner *bufio.Reader, arr *containers.Arr) { // разбивает строку на слова
 	s1, s2, s3 := "", "", ""
 	str, _ := scanner.ReadString('\n')
@@ -36,7 +37,7 @@ func input(scanner *bufio.Reader, arr *containers.Arr) { // разбивает �
 	arr.Set(2, s3)
 }
 
-func (db *containers.DataBase) handleConnection(conn net.Conn) {
+func (db *serverDataBase) handleConnection(conn net.Conn) {
 	scanner := bufio.NewReader(conn)
 	ans := ""
 	conn.Write([]byte("Enter your login: "))                    //один логин - одни контейнеры
@@ -44,9 +45,9 @@ func (db *containers.DataBase) handleConnection(conn net.Conn) {
 	commands := new(containers.Arr)
 	input(scanner, commands)
 	for i := 0; ans != "exit" && conn != nil && i < 10000; i++ {
-		db.mutex.Lock()
-		ans = db.execute(commands, password)                    // критическая область
-		db.mutex.Unlock()
+		db.Mutex.Lock()
+		ans = db.Execute(commands, password)                    // критическая область
+		db.Mutex.Unlock()
 		conn.Write([]byte(ans + "\n"))
 		input(scanner, commands)
 	}
@@ -60,13 +61,13 @@ func main() {
 		panic(err)
 	}
 	defer sock.Close()
-	db := new(containers.DataBase)
-	db.a = make(map[string]*containers.Arr)
-	db.b = make(map[string]*containers.Bst)
-	db.h = make(map[string]*containers.HashMap)
-	db.q = make(map[string]*containers.Queue)
-	db.s = make(map[string]*containers.Stack)
-	db.set = make(map[string]*containers.Set)
+	db := new(serverDataBase)
+	db.Array = make(map[string]*containers.Arr)
+	db.BST = make(map[string]*containers.Bst)
+	db.HashMap = make(map[string]*containers.HashMap)
+	db.Queue = make(map[string]*containers.Queue)
+	db.Stack = make(map[string]*containers.Stack)
+	db.Set = make(map[string]*containers.Set)
 	fmt.Println("Server is up and ready")
 	for {
 		ln, err := sock.Accept()
