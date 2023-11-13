@@ -10,16 +10,6 @@ import (
 												   // файл, который вы сейчас читаете доступен по ссылке github.com/Andrey2246/DataBaseServer
 )
 
-type DataBase struct {
-	s     map[string]*containers.Stack
-	h     map[string]*containers.HashMap
-	q     map[string]*containers.Queue
-	set   map[string]*containers.Set
-	b     map[string]*containers.Bst
-	a     map[string]*containers.Arr
-	mutex sync.Mutex
-}
-
 func input(scanner *bufio.Reader, arr *containers.Arr) { // разбивает строку на слова
 	s1, s2, s3 := "", "", ""
 	str, _ := scanner.ReadString('\n')
