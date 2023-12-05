@@ -2,15 +2,17 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"net"
-	containers "github.com/Andrey2246/containers"  // это мой же модуль. 
-												   // файл, который вы сейчас читаете доступен по ссылке github.com/Andrey2246/DataBaseServer
+
+	containers "github.com/Andrey2246/containers" // это мой же модуль.
+	// файл, который вы сейчас читаете доступен по ссылке github.com/Andrey2246/DataBaseServer
 )
-type serverDataBase struct{
-	 containers.DataBase
-	}
+
+type serverDataBase struct {
+	containers.DataBase
+}
+
 func input(scanner *bufio.Reader, arr *containers.Arr) { // разбивает строку на слова
 	s1, s2, s3 := "", "", ""
 	str, _ := scanner.ReadString('\n')
@@ -40,13 +42,13 @@ func input(scanner *bufio.Reader, arr *containers.Arr) { // разбивает �
 func (db *serverDataBase) handleConnection(conn net.Conn) {
 	scanner := bufio.NewReader(conn)
 	ans := ""
-	conn.Write([]byte("Enter your login: "))                    //один логин - одни контейнеры
-	password, _ := bufio.NewReader(conn).ReadString('\n')		//если логина раньше не было, он создается
+	conn.Write([]byte("Enter your login: "))           //один логин - одни контейнеры
+	login, _ := bufio.NewReader(conn).ReadString('\n') //если логина раньше не было, он создается
 	commands := new(containers.Arr)
 	input(scanner, commands)
-	for i := 0; ans != "exit" && conn != nil && i < 10000; i++ {
+	for i := 0; ans != "exit" && conn != nil && i < 1000; i++ {
 		db.Mutex.Lock()
-		ans = db.Execute(commands, password)                    // критическая область
+		ans = db.Execute(commands, login) // критическая область
 		db.Mutex.Unlock()
 		conn.Write([]byte(ans + "\n"))
 		input(scanner, commands)
@@ -55,7 +57,7 @@ func (db *serverDataBase) handleConnection(conn net.Conn) {
 }
 
 func main() {
-	sock, err := net.Listen("tcp", ":6379") 				    //  соединение tcp, порт - 6379
+	sock, err := net.Listen("tcp", ":6379") //  соединение tcp, порт - 6379
 	if err != nil {
 		log.Fatalln("conn messed up \n", err.Error())
 		panic(err)
@@ -68,14 +70,14 @@ func main() {
 	db.Queue = make(map[string]*containers.Queue)
 	db.Stack = make(map[string]*containers.Stack)
 	db.Set = make(map[string]*containers.Set)
-	fmt.Println("Server is up and ready")
+	log.Println("Server is up and ready")
 	for {
 		ln, err := sock.Accept()
 		if err != nil {
 			log.Fatalln("read messed up", err.Error())
 			panic(err)
 		}
-		fmt.Println(ln.RemoteAddr(), "connected")
+		log.Println(ln.RemoteAddr(), "connected")
 		go db.handleConnection(ln)
 	}
 }
